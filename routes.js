@@ -63,7 +63,7 @@ router.get('/update-status/:id', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-// Route to generate PDF
+// Route to generate shipping label
 router.get('/generate-shipping-label/:orderNumber', async (req, res) => {
     const { orderNumber } = req.params;
     const order = await Order.findOne({ orderNumber });
@@ -90,31 +90,6 @@ router.get('/generate-shipping-label/:orderNumber', async (req, res) => {
             res.setHeader('Content-type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=shipping_label_${orderNumber}.pdf`);
             stream.pipe(res);
-        });
-    });
-});
-
-
-// Route to generate Shipping Label PDF
-router.get('/generate-shipping-label/:orderNumber', async (req, res) => {
-    const { orderNumber } = req.params;
-    const order = await Order.findOne({orderNumber});
-    const pdfPath = path.join(__dirname, 'public', 'pdf', `shipping_label_${orderNumber}.pdf`);
-    ejs.renderFile(path.join(__dirname, 'views', 'shipping-label.ejs'), { order }, (err, html) => {
-        if (err) {
-            console.error('Error rendering EJS:', err);
-            return res.status(500).send('Error generating PDF');
-        }
-        const options = {
-            height: "37.5mm", // 1/8th of A4 height
-            width: "105mm"    // Full A4 width
-        };
-        pdf.create(html, options).toFile(pdfPath, (err) => {
-            if (err) {
-                console.error('Error creating PDF:', err);
-                return res.status(500).send('Error generating PDF');
-            }
-            res.download(pdfPath);
         });
     });
 });
