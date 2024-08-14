@@ -63,8 +63,8 @@ router.get('/update-status/:id', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-// Route to generate shipping label
-router.get('/generate-shipping-label/:orderNumber', async (req, res) => {
+
+router.get('/generate-pdf/:orderNumber', async (req, res) => {
     const { orderNumber } = req.params;
     const order = await Order.findOne({ orderNumber });
 
@@ -73,7 +73,7 @@ router.get('/generate-shipping-label/:orderNumber', async (req, res) => {
     }
 
     // Render EJS template to HTML
-    ejs.renderFile(path.join(__dirname, 'views', 'shipping-label.ejs'), { order }, async (err, html) => {
+    ejs.renderFile(path.join(__dirname, 'views', 'pdf-template.ejs'), { order }, async (err, html) => {
         if (err) {
             console.error('Error rendering EJS:', err);
             return res.status(500).send('Error generating PDF');
@@ -89,20 +89,39 @@ router.get('/generate-shipping-label/:orderNumber', async (req, res) => {
             const pdfBuffer = await page.pdf({
                 format: 'A4',
                 printBackground: true,
-                width: '148mm',  // Width of half A4
-                height: '37mm'   // Height of 1/8 A4
+                width: '210mm',  // Full A4 width
+                height: '297mm'  // Full A4 height
             });
 
             await browser.close();
 
             // Send the PDF as a response
             res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename=shipping_label_${orderNumber}.pdf`);
+            res.setHeader('Content-Disposition', `attachment; filename=order_${orderNumber}_pdf.pdf`);
             res.send(pdfBuffer);
         } catch (pdfError) {
             console.error('Error generating PDF with Puppeteer:', pdfError);
             res.status(500).send('Error generating PDF');
         }
+    });
+});
+
+// Route to generate shipping label
+router.get('/shipping-label/:orderNumber', async (req, res) => {
+    const { orderNumber } = req.params;
+    const order = await Order.findOne({ orderNumber });
+
+    if (!order) {
+        return res.status(404).send('Order not found');
+    }
+
+    // Render the EJS template to HTML
+    ejs.renderFile(path.join(__dirname, 'views', 'shipping-label.ejs'), { order }, (err, html) => {
+        if (err) {
+            console.error('Error rendering EJS:', err);
+            return res.status(500).send('Error generating page');
+        }
+        res.send(html);
     });
 });
 
