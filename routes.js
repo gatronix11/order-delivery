@@ -4,7 +4,7 @@ const Order = require('./models/order');
 const pdf = require('html-pdf');
 const ejs = require('ejs');
 const path = require('path');
-
+const puppeteer = require('puppeteer');
 
 // Route to render the add order page
 router.get('/add-order', (req, res) => {
@@ -72,28 +72,39 @@ router.get('/generate-shipping-label/:orderNumber', async (req, res) => {
         return res.status(404).send('Order not found');
     }
 
-    ejs.renderFile(path.join(__dirname, 'views', 'shipping-label.ejs'), { order }, (err, html) => {
+    // Render EJS template to HTML
+    ejs.renderFile(path.join(__dirname, 'views', 'shipping-label.ejs'), { order }, async (err, html) => {
         if (err) {
             console.error('Error rendering EJS:', err);
             return res.status(500).send('Error generating PDF');
         }
-        const options = {
-            format: 'A4',
-            width: '148mm',  // Width of half A4
-            height: '37mm'   // Height of 1/8 A4
-        };
-        pdf.create(html, options).toStream((err, stream) => {
-            if (err) {
-                console.error('Error creating PDF:', err);
-                return res.status(500).send('Error generating PDF');
-            }
-            res.setHeader('Content-type', 'application/pdf');
+
+        try {
+            // Launch Puppeteer and create a PDF
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage();
+            await page.setContent(html, { waitUntil: 'networkidle0' });
+
+            // Set the PDF options
+            const pdfBuffer = await page.pdf({
+                format: 'A4',
+                printBackground: true,
+                width: '148mm',  // Width of half A4
+                height: '37mm'   // Height of 1/8 A4
+            });
+
+            await browser.close();
+
+            // Send the PDF as a response
+            res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=shipping_label_${orderNumber}.pdf`);
-            stream.pipe(res);
-        });
+            res.send(pdfBuffer);
+        } catch (pdfError) {
+            console.error('Error generating PDF with Puppeteer:', pdfError);
+            res.status(500).send('Error generating PDF');
+        }
     });
 });
-
 
 
 module.exports = router;
