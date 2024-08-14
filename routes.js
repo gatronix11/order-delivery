@@ -64,24 +64,27 @@ router.get('/update-status/:id', async (req, res) => {
     }
 });
 // Route to generate PDF
-router.get('/download-pdf/:orderNumber', async (req, res) => {
+router.get('/generate-shipping-label/:orderNumber', async (req, res) => {
     const { orderNumber } = req.params;
-    const order = await Order.findOne({orderNumber});
-    const pdfPath = path.join(__dirname, 'public', 'pdf', `order_${orderNumber}.pdf`);
-    ejs.renderFile(path.join(__dirname, 'views', 'pdf-template.ejs'), { order }, (err, html) => {
+    const order = await Order.findOne({ orderNumber });
+
+    ejs.renderFile(path.join(__dirname, 'views', 'shipping-label.ejs'), { order }, (err, html) => {
         if (err) {
             console.error('Error rendering EJS:', err);
             return res.status(500).send('Error generating PDF');
         }
-        pdf.create(html).toFile(pdfPath, (err) => {
+        pdf.create(html).toStream((err, stream) => {
             if (err) {
                 console.error('Error creating PDF:', err);
                 return res.status(500).send('Error generating PDF');
             }
-            res.download(pdfPath);
+            res.setHeader('Content-type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=shipping_label_${orderNumber}.pdf`);
+            stream.pipe(res);
         });
     });
 });
+
 
 // Route to generate Shipping Label PDF
 router.get('/generate-shipping-label/:orderNumber', async (req, res) => {
