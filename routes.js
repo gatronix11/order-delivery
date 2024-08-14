@@ -64,7 +64,7 @@ router.get('/update-status/:id', async (req, res) => {
     }
 });
 
-router.get('/generate-pdf/:orderNumber', async (req, res) => {
+router.get('/order-details/:orderNumber', async (req, res) => {
     const { orderNumber } = req.params;
     const order = await Order.findOne({ orderNumber });
 
@@ -72,37 +72,13 @@ router.get('/generate-pdf/:orderNumber', async (req, res) => {
         return res.status(404).send('Order not found');
     }
 
-    // Render EJS template to HTML
-    ejs.renderFile(path.join(__dirname, 'views', 'pdf-template.ejs'), { order }, async (err, html) => {
+    // Render the EJS template to HTML
+    ejs.renderFile(path.join(__dirname, 'views', 'pdf-template.ejs'), { order }, (err, html) => {
         if (err) {
             console.error('Error rendering EJS:', err);
-            return res.status(500).send('Error generating PDF');
+            return res.status(500).send('Error generating page');
         }
-
-        try {
-            // Launch Puppeteer and create a PDF
-            const browser = await puppeteer.launch();
-            const page = await browser.newPage();
-            await page.setContent(html, { waitUntil: 'networkidle0' });
-
-            // Set the PDF options
-            const pdfBuffer = await page.pdf({
-                format: 'A4',
-                printBackground: true,
-                width: '210mm',  // Full A4 width
-                height: '297mm'  // Full A4 height
-            });
-
-            await browser.close();
-
-            // Send the PDF as a response
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename=order_${orderNumber}_pdf.pdf`);
-            res.send(pdfBuffer);
-        } catch (pdfError) {
-            console.error('Error generating PDF with Puppeteer:', pdfError);
-            res.status(500).send('Error generating PDF');
-        }
+        res.send(html);
     });
 });
 
