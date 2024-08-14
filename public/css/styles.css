@@ -108,12 +108,12 @@ a:hover {
 }
 /* Existing styles... */
 
-.status-pending {
+.status-pending-delivery {
     color: orange;
     font-weight: bold;
 }
 
-.status-sent {
+.status-sent-for-delivery {
     color: blue;
     font-weight: bold;
 }
