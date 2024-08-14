@@ -24,7 +24,7 @@
         <select id="status" name="status">
             <option value="">All</option>
             <option value="Pending delivery" <%= status === 'Pending delivery' ? 'selected' : '' %>>Pending delivery</option>
-            <option value="Sent for delivery" <%= status === 'Sent for delivery' ? 'selected' : '' %>>Sent for delivery</option>
+            <option value="Shipped" <%= status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
             <option value="Delivered" <%= status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
             <option value="Returned" <%= status === 'Returned' ? 'selected' : '' %>>Returned</option>
         </select>
@@ -36,7 +36,7 @@
                 <th>Order Number</th>
                 <th>Order Status</th>
                 <th>Update Status</th>
-                <th>Downloads</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -48,7 +48,7 @@
                         <form action="/update-status/<%= order._id %>" method="get" style="display: inline;">
                             <select name="status" onchange="this.form.submit()">
                                 <option value="Pending delivery" <%= order.status === 'Pending delivery' ? 'selected' : '' %>>Pending delivery</option>
-                                <option value="Sent for delivery" <%= order.status === 'Sent for delivery' ? 'selected' : '' %>>Sent for delivery</option>
+                                <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
                                 <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
                                 <option value="Returned" <%= order.status === 'Returned' ? 'selected' : '' %>>Returned</option>
                             </select>
