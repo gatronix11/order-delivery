@@ -68,12 +68,21 @@ router.get('/generate-shipping-label/:orderNumber', async (req, res) => {
     const { orderNumber } = req.params;
     const order = await Order.findOne({ orderNumber });
 
+    if (!order) {
+        return res.status(404).send('Order not found');
+    }
+
     ejs.renderFile(path.join(__dirname, 'views', 'shipping-label.ejs'), { order }, (err, html) => {
         if (err) {
             console.error('Error rendering EJS:', err);
             return res.status(500).send('Error generating PDF');
         }
-        pdf.create(html).toStream((err, stream) => {
+        const options = {
+            format: 'A4',
+            width: '148mm',  // Width of half A4
+            height: '37mm'   // Height of 1/8 A4
+        };
+        pdf.create(html, options).toStream((err, stream) => {
             if (err) {
                 console.error('Error creating PDF:', err);
                 return res.status(500).send('Error generating PDF');
