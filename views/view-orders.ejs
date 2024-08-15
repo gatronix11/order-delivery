@@ -44,11 +44,11 @@
         <tbody>
             <% orders.forEach((order, orderNumber) => { %>
                 <tr>
-                    <td><%= order.orderNumber %></td>
+                    <td><a href="/order-details/<%= order.orderNumber %>" target="_blank"><%= order.orderNumber %></a></td>
                     <td><%= order.customerName %></td>
                     <td>
                         <p><%= order.product %></p>
-                        <p><%= order.price %>'/='</p>
+                        <p><%= order.price %>/=</p>
                     </td>
                     <td class="status-<%= order.status.replace(' ', '-').toLowerCase() %>"><%= order.status %></td>
                     <td>
@@ -63,7 +63,6 @@
                     </td>
                     <td>
                         <div class='download-links'>
-                            <a href="/order-details/<%= order.orderNumber %>" target="_blank">Order Summary</a>
                             <a href="/shipping-label/<%= order.orderNumber %>" target="_blank">Shipping Label</a>
                         </div>
                     </td>
