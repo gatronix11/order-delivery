@@ -33,7 +33,7 @@ router.post('/add-order', async (req, res) => {
     const orderDate = new Date();
     orderDate.setMinutes(orderDate.getMinutes() + 330);
     
-    const newOrder = new Order({ orderNumber, customerName, address, contactNumber, product, price, shippingMethod, orderDate });
+    const newOrder = new Order({ orderNumber: newOrderNumber, customerName, address, contactNumber, product, price, shippingMethod, orderDate });
     
     await newOrder.save();
     res.redirect('/view-orders');
