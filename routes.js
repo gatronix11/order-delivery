@@ -4,7 +4,7 @@ const Order = require('./models/order');
 const pdf = require('html-pdf');
 const ejs = require('ejs');
 const path = require('path');
-const puppeteer = require('puppeteer');
+const OrderNumber = require('./models/OrderNumber');
 
 // Route to render the add order page
 router.get('/add-order', (req, res) => {
@@ -14,6 +14,21 @@ router.get('/add-order', (req, res) => {
 // Route to handle adding a new order
 router.post('/add-order', async (req, res) => {
     const { orderNumber, customerName, address, contactNumber, product, price, shippingMethod } = req.body;
+
+    let newOrderNumber;
+    if (orderNumber) {
+        newOrderNumber = orderNumber;
+    } else {
+        // Find the last order number and increment it
+        let orderNumberDoc = await OrderNumber.findOne();
+        if (!orderNumberDoc) {
+            // If no document exists, create one
+            orderNumberDoc = new OrderNumber({ lastOrderNumber: 0 });
+        }
+        newOrderNumber = orderNumberDoc.lastOrderNumber + 1;
+        orderNumberDoc.lastOrderNumber = newOrderNumber;
+        await orderNumberDoc.save();
+    }
     
     const orderDate = new Date();
     orderDate.setMinutes(orderDate.getMinutes() + 330);
