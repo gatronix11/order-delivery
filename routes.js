@@ -24,7 +24,11 @@ router.post('/add-order', async (req, res) => {
     const newOrder = new Order({ orderNumber, customerName, address, contactNumber, product, price, shippingMethod, orderDate });
     
     await newOrder.save();
-
+    res.render('add-order', { successMessage: 'Order added successfully!' });
+    } catch (error) {
+        console.error('Error adding order:', error);
+        res.status(500).send('Error adding order');
+    }
 });
 
 // Route to render the view orders page
