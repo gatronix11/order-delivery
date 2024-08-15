@@ -36,6 +36,7 @@
                 <th>Order Number</th>
                 <th>Customer</th>
                 <th>Product</th>
+                <th>Delivery Method</th>
                 <th>Order Status</th>
                 <th>Update Status</th>
                 <th></th>
@@ -50,6 +51,7 @@
                         <p><%= order.product %></p>
                         <p><%= order.price %>/=</p>
                     </td>
+                    <td>order.shippingMethod</td>
                     <td class="status-<%= order.status.replace(' ', '-').toLowerCase() %>"><%= order.status %></td>
                     <td>
                         <form action="/update-status/<%= order._id %>" method="get" style="display: inline;">
