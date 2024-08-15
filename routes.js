@@ -17,6 +17,9 @@ router.post('/add-order', async (req, res) => {
     
     const orderDate = new Date();
     orderDate.setMinutes(orderDate.getMinutes() + 330);
+
+    const orderCount = await Order.countDocuments();
+    orderNumber = orderCount + 119;
     
     const newOrder = new Order({ orderNumber, customerName, address, contactNumber, product, price, shippingMethod, orderDate });
     
