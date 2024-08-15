@@ -70,6 +70,10 @@ th, td {
     border-bottom: 1px solid #ddd;
 }
 
+tr {
+    border-right: 1px solid #ddd;
+}
+
 th {
     background-color: #007BFF;
     color: white;
