@@ -14,10 +14,25 @@ router.get('/add-order', (req, res) => {
 router.post('/add-order', async (req, res) => {
     const { orderNumber, customerName, address, contactNumber, product, price, shippingMethod } = req.body;
     
+    let newOrderNumber;
+    if (orderNumber && !isNaN(orderNumber)) {
+        newOrderNumber = parseInt(orderNumber, 10);
+    } else {
+            // Find the last order number and increment it
+        let orderNumberDoc = await OrderNumber.findOne();
+        if (!orderNumberDoc) {
+                // If no document exists, create one
+            orderNumberDoc = new OrderNumber({ lastOrderNumber: 0 });
+        }
+        newOrderNumber = orderNumberDoc.lastOrderNumber + 1;
+        orderNumberDoc.lastOrderNumber = newOrderNumber;
+        await orderNumberDoc.save();
+    }
+    
     const orderDate = new Date();
     orderDate.setMinutes(orderDate.getMinutes() + 330);
     
-    const newOrder = new Order({ orderNumber, customerName, address, contactNumber, product, price, shippingMethod, orderDate });
+    const newOrder = new Order({ orderNumber: newOrderNumber, customerName, address, contactNumber, product, price, shippingMethod, orderDate });
     
     await newOrder.save();
     res.redirect('/view-orders');
