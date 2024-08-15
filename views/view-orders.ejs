@@ -34,6 +34,8 @@
         <thead>
             <tr>
                 <th>Order Number</th>
+                <th>Customer</th>
+                <th>Product</th>
                 <th>Order Status</th>
                 <th>Update Status</th>
                 <th></th>
@@ -43,6 +45,11 @@
             <% orders.forEach((order, orderNumber) => { %>
                 <tr>
                     <td><%= order.orderNumber %></td>
+                    <td><%= order.customerName %></td>
+                    <td>
+                        <p><%= order.product %></p>
+                        <p><%= order.price %></p>
+                    </td>
                     <td class="status-<%= order.status.replace(' ', '-').toLowerCase() %>"><%= order.status %></td>
                     <td>
                         <form action="/update-status/<%= order._id %>" method="get" style="display: inline;">
@@ -56,8 +63,8 @@
                     </td>
                     <td>
                         <div class="download-links">
-                            <a href="/order-details/<%= order.orderNumber %>" target="_blank">View Order Details</a>
-                            <a href="/shipping-label/<%= order.orderNumber %>" target="_blank">View Shipping Label</a>
+                            <a href="/order-details/<%= order.orderNumber %>" target="_blank">Order Summary</a>
+                            <a href="/shipping-label/<%= order.orderNumber %>" target="_blank">Shipping Label</a>
                         </div>
                     </td>
                 </tr>
