@@ -24,7 +24,7 @@ router.post('/add-order', async (req, res) => {
     const newOrder = new Order({ orderNumber, customerName, address, contactNumber, product, price, shippingMethod, orderDate });
     
     await newOrder.save();
-    res.redirect('/view-orders');
+
 });
 
 // Route to render the view orders page
