@@ -13,7 +13,7 @@ router.get('/add-order', (req, res) => {
 
 // Route to handle adding a new order
 router.post('/add-order', async (req, res) => {
-    const { orderNumber, customerName, address, contactNumber, product, price, shippingMethod } = req.body;
+    const { customerName, address, contactNumber, product, price, shippingMethod } = req.body;
     
     const orderDate = new Date();
     orderDate.setMinutes(orderDate.getMinutes() + 330);
