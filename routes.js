@@ -4,6 +4,8 @@ const Order = require('./models/order');
 const pdf = require('html-pdf');
 const ejs = require('ejs');
 const path = require('path');
+const OrderNumber = require('./models/OrderNumber');
+
 
 // Route to render the add order page
 router.get('/add-order', (req, res) => {
